@@ -8,13 +8,14 @@
 
 // @todo: Вывести карточки на страницу
 
+const templateCard = document.querySelector('#card-template').content;
 const cardList = document.querySelector('.places__list');
 
 function createCard(data, deleteCard) {
-  const templateCard = document.querySelector('#card-template').content;
   const card = templateCard.cloneNode(true);
-  card.querySelector('.card__image').src = data.link;
-  card.querySelector('.card__image').alt = data.name;
+  const cardImg = card.querySelector('.card__image');
+  cardImg.src = data.link;
+  cardImg.alt = data.textContent;
   card.querySelector('.card__title').textContent = data.name;
   card.querySelector('.card__delete-button').addEventListener('click', deleteCard);
   return card;
