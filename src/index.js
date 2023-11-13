@@ -13,7 +13,7 @@ const openPopImg = document.querySelector('.popup_type_image');
 const popupImg = openPopImg.querySelector('.popup__image');
 const popupCapt = openPopImg.querySelector('.popup__caption')
 
-function createCard(data, deleteCard,) {
+function createCard(data, deleteCard, openImg) {
   const card = templateCard.cloneNode(true);
   const cardImg = card.querySelector('.card__image');
   cardImg.src = data.link;
@@ -52,7 +52,7 @@ function closeEsc(evt) {
 }
 
 popups.forEach((out) => {
-  out.addEventListener('mousedown', (evt) => {
+  out.addEventListener('mouseup', (evt) => { // Somebody said that using 'mouseup' is better than 'mousedown,' but is it really?
     evt.target.classList.contains('popup__close') || evt.target.classList.contains('popup_is-opened') ? closeModal(out) : null;
   });
 });
