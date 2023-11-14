@@ -1,59 +1,69 @@
 import './styles/index.css';
 import { initialCards } from './components/cards.js';
-import { createCard, deleteCard } from './components/card.js';
+import { createCard, deleteCard, handleLike} from './components/card.js';
 import { openModal, closeModal } from './components/modal.js';
  
 // A bunch of unclear variables. Don't forget to fix that =)
 const cardContainer = document.querySelector('.places__list');
 const profileEditButton = document.querySelector('.profile__edit-button');
-const editProfilePopup = document.querySelector('.popup_type_edit');
-const addButton = document.querySelector('.profile__add-button');
+const profileButtonAdd = document.querySelector('.profile__add-button');
 const newCardPopup = document.querySelector('.popup_type_new-card');
-const openImagePopup = document.querySelector('.popup_type_image');
-const imagePopupImage = openImagePopup.querySelector('.popup__image');
-const imagePopupCaption = openImagePopup.querySelector('.popup__caption')
+const imageOpenPopup = document.querySelector('.popup_type_image');
+const imagePopupImage = imageOpenPopup.querySelector('.popup__image');
+const imagePopupCaption = imageOpenPopup.querySelector('.popup__caption')
 const profileName = document.querySelector('.profile__title');
 const profileDescription = document.querySelector('.profile__description');
-const formElement = document.querySelector('.popup__form');
-const nameInput = formElement.querySelector('.popup__input_type_name');
-const jobInput = formElement.querySelector('.popup__input_type_description');
+const popupProfileEdit = document.querySelector('.popup_type_edit');
+const formProfileEdit = popupProfileEdit.querySelector('.popup__form');
+const inputName = formProfileEdit.querySelector('.popup__input_type_name');
+const inputDescription = formProfileEdit.querySelector('.popup__input_type_description');
+const allPopups = document.querySelectorAll('.popup');
 
 function releaseCard() {
   initialCards.forEach(card => cardContainer.append(createCard(card, deleteCard, openImg, handleLike)));
 }
 
+allPopups.forEach((out) => {
+  out.addEventListener('mouseup', (evt) => { // Somebody said that using 'mouseup' is better than 'mousedown,' but is it really?
+    evt.target.classList.contains('popup__close') || evt.target.classList.contains('popup_is-opened') ? closeModal(out) : null;
+  });
+});
+
 releaseCard();
 
-function openImg(evt) {
-  evt.target.classList.contains('card__image') ? (imagePopupImage.src = evt.target.src, 
-    (imagePopupCaption.textContent = evt.target.alt),
-    openModal(openImagePopup)) : null;
+function openImg(cardTitle, cardImg) {
+  imagePopupImage.alt = cardTitle.textContent;
+  imagePopupCaption.textContent = cardTitle.textContent;
+  imagePopupImage.src = cardImg.src;
+  openModal(imageOpenPopup);
 };
 
 profileEditButton.addEventListener('click', () => {
-  nameInput.value = profileName.textContent;
-  jobInput.value = profileDescription.textContent;
-  openModal(editProfilePopup);
+  inputName.value = profileName.textContent;
+  inputDescription.value = profileDescription.textContent;
+  openModal(popupProfileEdit);
 });
 
-addButton.addEventListener('click', () => {
+profileButtonAdd.addEventListener('click', () => {
   openModal(newCardPopup);
 });
 
-function handleFormSubmit(evt) { // function that allows changing the profileName and profileDescription 
+function handleProfileFormSubmit(evt) { // function that allows changing the profileName and profileDescription 
   evt.preventDefault();
-  profileName.textContent = nameInput.value;
-  profileDescription.textContent = jobInput.value;
-  closeModal(editProfilePopup);
+  profileName.textContent = inputName.value;
+  profileDescription.textContent = inputDescription.value;
+  closeModal(popupProfileEdit);
 }
 
 function handleCardSubmit(evt) { // function that adds a new card to the page
   evt.preventDefault();
-  const placeName = newCardPopup.querySelector('.popup__input_type_card-name').value;
-  const link = newCardPopup.querySelector('.popup__input_type_url').value;
+  const placeName = newCardPopup.querySelector('.popup__input_type_card-name');
+  const link = newCardPopup.querySelector('.popup__input_type_url');
+  const inputName = placeName.value;
+  const inputLink = link.value;
   const card = {
-    name: placeName,
-    link: link
+    name: inputName,
+    link: inputLink
   };
   const newCard = createCard(card, deleteCard, openImg, handleLike);
   cardContainer.prepend(newCard);
@@ -61,11 +71,6 @@ function handleCardSubmit(evt) { // function that adds a new card to the page
   newCardPopup.querySelector('.popup__form').reset();
 }
 
-function handleLike(evt) {
-  evt.target.classList.toggle('card__like-button_is-active'); // When clicked, the color of the like will change
-}
-
 newCardPopup.addEventListener('submit', handleCardSubmit);
-formElement.addEventListener('submit', handleFormSubmit);
-
+formProfileEdit.addEventListener('submit', handleProfileFormSubmit);
 //Don't forget to clean the code
