@@ -1,72 +1,71 @@
 import './styles/index.css';
-import { initialCards } from './cards.js';
-
+import { initialCards } from './components/cards.js';
+import { createCard, deleteCard } from './components/card.js';
+import { openModal, closeModal } from './components/modal.js';
+ 
 // A bunch of unclear variables. Don't forget to fix that =)
-const templateCard = document.querySelector('#card-template').content;
-const cardList = document.querySelector('.places__list');
-const buttonEdit = document.querySelector('.profile__edit-button');
-const popups = document.querySelectorAll('.popup');
-const popupEdit = document.querySelector('.popup_type_edit');
-const buttonAddcard = document.querySelector('.profile__add-button');
-const popupNewcard = document.querySelector('.popup_type_new-card');
-const openPopImg = document.querySelector('.popup_type_image');
-const popupImg = openPopImg.querySelector('.popup__image');
-const popupCapt = openPopImg.querySelector('.popup__caption')
-
-function createCard(data, deleteCard, openImg) {
-  const card = templateCard.cloneNode(true);
-  const cardImg = card.querySelector('.card__image');
-  cardImg.src = data.link;
-  cardImg.alt = data.name;
-  cardImg.addEventListener('click', openImg)
-  card.querySelector('.card__title').textContent = data.name;
-  card.querySelector('.card__delete-button').addEventListener('click', deleteCard);
-  return card;
-}
-
-function deleteCard(evt) {
-  const delCard = evt.target.closest('.card');
-  delCard.remove();
-}
+const cardContainer = document.querySelector('.places__list');
+const profileEditButton = document.querySelector('.profile__edit-button');
+const editProfilePopup = document.querySelector('.popup_type_edit');
+const addButton = document.querySelector('.profile__add-button');
+const newCardPopup = document.querySelector('.popup_type_new-card');
+const openImagePopup = document.querySelector('.popup_type_image');
+const imagePopupImage = openImagePopup.querySelector('.popup__image');
+const imagePopupCaption = openImagePopup.querySelector('.popup__caption')
+const profileName = document.querySelector('.profile__title');
+const profileDescription = document.querySelector('.profile__description');
+const formElement = document.querySelector('.popup__form');
+const nameInput = formElement.querySelector('.popup__input_type_name');
+const jobInput = formElement.querySelector('.popup__input_type_description');
 
 function releaseCard() {
-  initialCards.forEach(card => cardList.append(createCard(card, deleteCard, openImg)));
+  initialCards.forEach(card => cardContainer.append(createCard(card, deleteCard, openImg, handleLike)));
 }
 
 releaseCard();
 
-function openModal(evt) {
-  // Don't forget to set setTimeout to make it a bit smoother
-  evt.classList.add('popup_is-opened');
-  document.addEventListener('keydown', closeEsc); // If don't remove the eventlistener from closeModal, an error will occur.
-}
-
-function closeModal(evt) {
-  // Don't forget to set setTimeout to make it a bit smoother
-  evt.classList.remove('popup_is-opened');
-  document.removeEventListener('keydown', closeEsc); // "This piece of code fixes that."
-}
-
-function closeEsc(evt) {
-  evt.code === 'Escape' && closeModal(document.querySelector('.popup_is-opened'));
-}
-
-popups.forEach((out) => {
-  out.addEventListener('mouseup', (evt) => { // Somebody said that using 'mouseup' is better than 'mousedown,' but is it really?
-    evt.target.classList.contains('popup__close') || evt.target.classList.contains('popup_is-opened') ? closeModal(out) : null;
-  });
-});
-
 function openImg(evt) {
-  evt.target.classList.contains('card__image') ? (popupImg.src = evt.target.src, 
-    (popupCapt.textContent = evt.target.alt),
-    openModal(openPopImg)) : null;
+  evt.target.classList.contains('card__image') ? (imagePopupImage.src = evt.target.src, 
+    (imagePopupCaption.textContent = evt.target.alt),
+    openModal(openImagePopup)) : null;
 };
 
-buttonEdit.addEventListener('click', () => {
-  openModal(popupEdit);
+profileEditButton.addEventListener('click', () => {
+  nameInput.value = profileName.textContent;
+  jobInput.value = profileDescription.textContent;
+  openModal(editProfilePopup);
 });
 
-buttonAddcard.addEventListener('click', () => {
-  openModal(popupNewcard);
+addButton.addEventListener('click', () => {
+  openModal(newCardPopup);
 });
+
+function handleFormSubmit(evt) { // function that allows changing the profileName and profileDescription 
+  evt.preventDefault();
+  profileName.textContent = nameInput.value;
+  profileDescription.textContent = jobInput.value;
+  closeModal(editProfilePopup);
+}
+
+function handleCardSubmit(evt) { // function that adds a new card to the page
+  evt.preventDefault();
+  const placeName = newCardPopup.querySelector('.popup__input_type_card-name').value;
+  const link = newCardPopup.querySelector('.popup__input_type_url').value;
+  const card = {
+    name: placeName,
+    link: link
+  };
+  const newCard = createCard(card, deleteCard, openImg, handleLike);
+  cardContainer.prepend(newCard);
+  closeModal(newCardPopup);
+  newCardPopup.querySelector('.popup__form').reset();
+}
+
+function handleLike(evt) {
+  evt.target.classList.toggle('card__like-button_is-active'); // When clicked, the color of the like will change
+}
+
+newCardPopup.addEventListener('submit', handleCardSubmit);
+formElement.addEventListener('submit', handleFormSubmit);
+
+//Don't forget to clean the code
