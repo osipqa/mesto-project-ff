@@ -5,7 +5,7 @@ function openModal(popup) {
   document.addEventListener('keydown', closeEsc); // If don't remove the eventlistener from closeModal, an error will occur.
 }
 
-function closeModal(popup) {
+function closeModal(popup) { // Without 'setTimeout', it became really sad here. :c
   popup.classList.remove('popup_is-opened');
   document.removeEventListener('keydown', closeEsc); // "This piece of code fixes that."
 }
