@@ -3,7 +3,7 @@ import { initialCards } from './components/cards.js';
 import { createCard, deleteCard, handleLike} from './components/card.js';
 import { openModal, closeModal } from './components/modal.js';
  
-// A bunch of unclear variables. Don't forget to fix that =)
+// variable names
 const cardContainer = document.querySelector('.places__list');
 const profileEditButton = document.querySelector('.profile__edit-button');
 const profileButtonAdd = document.querySelector('.profile__add-button');
@@ -18,7 +18,10 @@ const formProfileEdit = popupProfileEdit.querySelector('.popup__form');
 const inputName = formProfileEdit.querySelector('.popup__input_type_name');
 const inputDescription = formProfileEdit.querySelector('.popup__input_type_description');
 const allPopups = document.querySelectorAll('.popup');
+const inputPlaceNameFormAddNewCard = newCardPopup.querySelector('.popup__input_type_card-name');
+const inputPlaceLinkFormAddNewCard = newCardPopup.querySelector('.popup__input_type_url');
 
+// functions
 function releaseCard() {
   initialCards.forEach(card => cardContainer.append(createCard(card, deleteCard, openImg, handleLike)));
 }
@@ -29,24 +32,7 @@ allPopups.forEach((out) => {
   });
 });
 
-releaseCard();
-
-function openImg(cardTitle, cardImg) {
-  imagePopupImage.alt = cardTitle.textContent;
-  imagePopupCaption.textContent = cardTitle.textContent;
-  imagePopupImage.src = cardImg.src;
-  openModal(imageOpenPopup);
-};
-
-profileEditButton.addEventListener('click', () => {
-  inputName.value = profileName.textContent;
-  inputDescription.value = profileDescription.textContent;
-  openModal(popupProfileEdit);
-});
-
-profileButtonAdd.addEventListener('click', () => {
-  openModal(newCardPopup);
-});
+releaseCard(); // i would like to get rid of this thing, but I still dont know how to do it... :c
 
 function handleProfileFormSubmit(evt) { // function that allows changing the profileName and profileDescription 
   evt.preventDefault();
@@ -57,10 +43,8 @@ function handleProfileFormSubmit(evt) { // function that allows changing the pro
 
 function handleCardSubmit(evt) { // function that adds a new card to the page
   evt.preventDefault();
-  const placeName = newCardPopup.querySelector('.popup__input_type_card-name');
-  const link = newCardPopup.querySelector('.popup__input_type_url');
-  const inputName = placeName.value;
-  const inputLink = link.value;
+  const inputName = inputPlaceNameFormAddNewCard.value;
+  const inputLink = inputPlaceLinkFormAddNewCard.value;
   const card = {
     name: inputName,
     link: inputLink
@@ -71,6 +55,23 @@ function handleCardSubmit(evt) { // function that adds a new card to the page
   newCardPopup.querySelector('.popup__form').reset();
 }
 
+function openImg(data) {
+  imagePopupImage.alt = data.name;
+  imagePopupCaption.textContent = data.name;
+  imagePopupImage.src = data.link;
+  openModal(imageOpenPopup);
+};
+
+// click Event Listeners
+profileEditButton.addEventListener('click', () => {
+  inputName.value = profileName.textContent;
+  inputDescription.value = profileDescription.textContent;
+  openModal(popupProfileEdit);
+});
+
+profileButtonAdd.addEventListener('click', () => {
+  openModal(newCardPopup);
+});
+
 newCardPopup.addEventListener('submit', handleCardSubmit);
 formProfileEdit.addEventListener('submit', handleProfileFormSubmit);
-//Don't forget to clean the code

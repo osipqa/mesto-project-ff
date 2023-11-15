@@ -1,6 +1,6 @@
 export { createCard, deleteCard, handleLike };
 
-const cardTemplate = document.querySelector('#card-template').content;
+const cardTemplate = document.querySelector('#card-template').content.querySelector('.places__item');
 
 function createCard(data, deleteCard, openImg, handleLike) {
   const card = cardTemplate.cloneNode(true);
@@ -9,7 +9,7 @@ function createCard(data, deleteCard, openImg, handleLike) {
   cardTitle.textContent = data.name;
   cardImg.src = data.link;
   cardImg.alt = data.name;
-  cardImg.addEventListener('click', () => openImg(cardTitle, cardImg));
+  cardImg.addEventListener('click', () => openImg(data));
   card.querySelector('.card__delete-button').addEventListener('click', deleteCard);
   card.querySelector('.card__like-button').addEventListener('click', handleLike);
   return card;

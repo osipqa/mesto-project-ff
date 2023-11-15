@@ -1,6 +1,6 @@
 {
   "name": "mesto-project-ff",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "https://github.com/osipqa/mesto-project-ff /n New functions implemented, part of the code rewritten",
   "main": "index.js",
   "scripts": {
