@@ -28,7 +28,7 @@ function releaseCard() {
 
 allPopups.forEach((out) => {
   out.addEventListener('mouseup', (evt) => { // Somebody said that using 'mouseup' is better than 'mousedown,' but is it really?
-    evt.target.classList.contains('popup__close') || evt.target.classList.contains('popup_is-opened') ? closeModal(out) : null;
+    evt.target.classList.contains('popup_is-opened') ? closeModal(out) : null; // Someone set me up, there definitely shouldn't have been any extra element here.
   });
 });
 
