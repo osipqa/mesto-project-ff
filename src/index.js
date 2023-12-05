@@ -10,7 +10,7 @@ const profileButtonAdd = document.querySelector('.profile__add-button');
 const newCardPopup = document.querySelector('.popup_type_new-card');
 const imageOpenPopup = document.querySelector('.popup_type_image');
 const imagePopupImage = imageOpenPopup.querySelector('.popup__image');
-const imagePopupCaption = imageOpenPopup.querySelector('.popup__caption')
+const imagePopupCaption = document.querySelector('.popup__caption')
 const profileName = document.querySelector('.profile__title');
 const profileDescription = document.querySelector('.profile__description');
 const popupProfileEdit = document.querySelector('.popup_type_edit');
@@ -27,8 +27,10 @@ function releaseCard() {
 }
 
 allPopups.forEach((out) => {
-  out.addEventListener('mouseup', (evt) => { // Somebody said that using 'mouseup' is better than 'mousedown,' but is it really?
-    evt.target.classList.contains('popup_is-opened') ? closeModal(out) : null; // Someone set me up, there definitely shouldn't have been any extra element here.
+  out.addEventListener('mouseup', ({target, currentTarget}) => { 
+    const isTargetCloseButton = target.classList.contains('popup__close');
+    const isTargetOverlay = target === currentTarget;
+    if (isTargetCloseButton || isTargetOverlay) closeModal(out);
   });
 });
 
