@@ -2,7 +2,8 @@ import './styles/index.css';
 import { initialCards } from './components/cards.js';
 import { createCard, deleteCard, handleLike} from './components/card.js';
 import { openModal, closeModal } from './components/modal.js';
- 
+import { enableValidation } from './components/validation.js';
+
 // variable names
 const cardContainer = document.querySelector('.places__list');
 const profileEditButton = document.querySelector('.profile__edit-button');
@@ -20,11 +21,18 @@ const inputDescription = formProfileEdit.querySelector('.popup__input_type_descr
 const allPopups = document.querySelectorAll('.popup');
 const inputPlaceNameFormAddNewCard = newCardPopup.querySelector('.popup__input_type_card-name');
 const inputPlaceLinkFormAddNewCard = newCardPopup.querySelector('.popup__input_type_url');
+const validationConfig = {
+  formSelector: '.popup__form',
+  inputSelector: '.popup__input',
+  submitButtonSelector: '.popup__button',
+  inactiveButtonClass: 'popup__button_disabled',
+  inputErrorClass: 'popup__input_type_error',
+  errorClass: 'popup__error_visible'
+}
 
-// functions
 function releaseCard() {
   initialCards.forEach(card => cardContainer.append(createCard(card, deleteCard, openImg, handleLike)));
-}
+};
 
 allPopups.forEach((out) => {
   out.addEventListener('mouseup', ({target, currentTarget}) => { 
@@ -64,7 +72,6 @@ function openImg(data) {
   openModal(imageOpenPopup);
 };
 
-// click Event Listeners
 profileEditButton.addEventListener('click', () => {
   inputName.value = profileName.textContent;
   inputDescription.value = profileDescription.textContent;
@@ -77,3 +84,5 @@ profileButtonAdd.addEventListener('click', () => {
 
 newCardPopup.addEventListener('submit', handleCardSubmit);
 formProfileEdit.addEventListener('submit', handleProfileFormSubmit);
+
+enableValidation(validationConfig);

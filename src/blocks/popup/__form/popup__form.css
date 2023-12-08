@@ -1,3 +1,19 @@
 .popup__form {
   margin-top: 27px;
 }
+
+.popup__error {
+  display: block;
+  opacity: 0;
+  font-size: 10px;
+  color: #f00;
+  position: absolute;
+}
+
+.popup__error_visible {
+  opacity: 1;
+}
+
+.popup__error:last-of-type {
+  margin-block-start: 5px;
+}
