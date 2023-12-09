@@ -2,7 +2,7 @@ import './styles/index.css';
 import { initialCards } from './components/cards.js';
 import { createCard, deleteCard, handleLike} from './components/card.js';
 import { openModal, closeModal } from './components/modal.js';
-import { enableValidation } from './components/validation.js';
+import { enableValidation, clearValidation } from './components/validation.js';
 
 // variable names
 const cardContainer = document.querySelector('.places__list');
@@ -75,10 +75,12 @@ function openImg(data) {
 profileEditButton.addEventListener('click', () => {
   inputName.value = profileName.textContent;
   inputDescription.value = profileDescription.textContent;
+  clearValidation(popupProfileEdit, validationConfig);
   openModal(popupProfileEdit);
 });
 
 profileButtonAdd.addEventListener('click', () => {
+  clearValidation(newCardPopup, validationConfig);
   openModal(newCardPopup);
 });
 
