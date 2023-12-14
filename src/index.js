@@ -110,10 +110,8 @@ function handleDeleteCard(evt) {
   evt.preventDefault();
   saveInfo(true, popupDeleteCardButton);
   const cardID = popupDeleteCardButton.dataset.cardId;
-  console.log("Card ID to delete:", cardID);
   deleteCards(cardID)
     .then(() => {
-      console.log('Card successfully deleted from server');
       const deleteCard = document.getElementById(cardID);
       if (deleteCard) {
         deleteCard.remove();
@@ -158,8 +156,8 @@ profileButtonAdd.addEventListener('click', () => {
 });
 
 profileImage.addEventListener('click', () => {
-  clearValidation(avatarPopup, validationConfig);
   inputLinkAvatar.value = '';
+  clearValidation(avatarPopup, validationConfig);
   openModal(avatarPopup);
 })
 
