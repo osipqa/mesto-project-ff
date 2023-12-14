@@ -48,7 +48,6 @@ allPopups.forEach((out) => {
 
 Promise.all([getInfo("/users/me"), getCards("/cards")])
   .then((data) => {
-    console.log(data);
     const currentUser = data[0];
     const userCards = data[1].filter(card => card.owner._id === currentUser._id);
     profileName.textContent = data[0].name;
@@ -56,7 +55,7 @@ Promise.all([getInfo("/users/me"), getCards("/cards")])
     profileImage.style = `background-image: url('${data[0].avatar}')`
     userCards.forEach(card => cardContainer.append(createCard(card, removeCard, openImg, handleLike, currentUser._id)))
   })
-  .catch(err => console.log(err)) 
+  .catch((err) => Promise.reject(`Error: ${err.status}`));
 
 function handleProfileFormSubmit(evt) { // function that allows changing the profileName and profileDescription 
   evt.preventDefault();

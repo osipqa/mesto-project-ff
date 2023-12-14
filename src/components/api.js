@@ -13,9 +13,9 @@ export function getInfo(data) {
   })
   .then(res => res.json())
   .then(res => {
-    console.log(res);
     return res;
   })
+  .catch((err) => Promise.reject(`Error: ${err.status}`))
 }
 
 export function getCards(data) {
@@ -25,9 +25,9 @@ export function getCards(data) {
   })
   .then(res => res.json())
   .then(res => {
-    console.log(res);
     return res;
   })
+  .catch((err) => Promise.reject(`Error: ${err.status}`))
 }
 
 function post(users, data, method = "POST") {
@@ -38,9 +38,9 @@ function post(users, data, method = "POST") {
   })
   .then(res => res.json())
   .then(res => {
-    console.log(res);
     return res;
   })
+  .catch((err) => Promise.reject(`Error: ${err.status}`))
 }
 
 export function toChangeNames(inputName, inputDescription) {
