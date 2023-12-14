@@ -1,8 +1,8 @@
 import './styles/index.css';
-import { initialCards } from './components/cards.js';
-import { createCard, deleteCard, handleLike} from './components/card.js';
+import { createCard, handleLike } from './components/card.js';
 import { openModal, closeModal } from './components/modal.js';
 import { enableValidation, clearValidation } from './components/validation.js';
+import { getInfo, getCards, deleteCards, toChangeAvatar, toChangeNames, addCards} from './components/api.js';
 
 // variable names
 const cardContainer = document.querySelector('.places__list');
@@ -11,6 +11,8 @@ const profileButtonAdd = document.querySelector('.profile__add-button');
 const profileImage = document.querySelector('.profile__image');
 const avatarPopup = document.querySelector('.popup__avatar');
 const inputLinkAvatar = document.getElementById('link-avatar-input');
+const popupDeleteCard = document.querySelector('.popup_delete-image');
+const popupDeleteCardButton = popupDeleteCard.querySelector('.popup__button');
 const popupButton = avatarPopup.querySelector('.popup__button');
 const newCardPopup = document.querySelector('.popup_type_new-card');
 const imageOpenPopup = document.querySelector('.popup_type_image');
@@ -24,6 +26,7 @@ const formProfileEdit = popupProfileEdit.querySelector('.popup__form');
 const inputName = formProfileEdit.querySelector('.popup__input_type_name');
 const inputDescription = formProfileEdit.querySelector('.popup__input_type_description');
 const allPopups = document.querySelectorAll('.popup');
+const cardButton = newCardPopup.querySelector('.popup__button')
 const inputPlaceNameFormAddNewCard = newCardPopup.querySelector('.popup__input_type_card-name');
 const inputPlaceLinkFormAddNewCard = newCardPopup.querySelector('.popup__input_type_url');
 const validationConfig = {
@@ -35,10 +38,6 @@ const validationConfig = {
   errorClass: 'popup__error_visible'
 }
 
-function releaseCard() {
-  initialCards.forEach(card => cardContainer.append(createCard(card, deleteCard, openImg, handleLike)));
-};
-
 allPopups.forEach((out) => {
   out.addEventListener('mouseup', ({target, currentTarget}) => { 
     const isTargetCloseButton = target.classList.contains('popup__close');
@@ -47,64 +46,24 @@ allPopups.forEach((out) => {
   });
 });
 
-releaseCard(); // i would like to get rid of this thing, but I still dont know how to do it... :c
-
-const config = {
-  baseUrl: 'https://nomoreparties.co/v1/wff-cohort-2',
-  headers: {
-    authorization: '637888a1-9ced-4570-b92f-3c1ad708077b',
-    'Content-Type': 'application/json'
-  }
-}
-
-Promise.all([getinfo("/users/me")])
+Promise.all([getInfo("/users/me"), getCards("/cards")])
   .then((data) => {
     console.log(data);
+    const currentUser = data[0];
+    const userCards = data[1].filter(card => card.owner._id === currentUser._id);
     profileName.textContent = data[0].name;
     profileDescription.textContent = data[0].about;
     profileImage.style = `background-image: url('${data[0].avatar}')`
+    userCards.forEach(card => cardContainer.append(createCard(card, removeCard, openImg, handleLike, currentUser._id)))
   })
-
-function getinfo(data) {
-  return fetch(`${config.baseUrl}${data}`, {
-    method: "GET",
-    headers: config.headers,
-  })
-  .then(res => res.json())
-  .then(res => {
-    console.log(res)
-    return res
-  })
-}
-
-getinfo("/users/me");
-
-function post(users, data, method = "POST") {
-  return fetch(`${config.baseUrl}${users}`, {
-    method,
-    headers: config.headers,
-    body: JSON.stringify(data),
-  })
-  .then(res => res.json())
-  .then(res => {
-    console.log(res);
-    return res;
-  })
-}
-
-function toChangeNames(inputName, inputDescription) {
-  return post("/users/me", { name: inputName, about: inputDescription}, "PATCH");
-}
-
-function toChangeAvatar(avatarLink) {
-  return post("/users/me/avatar", { avatar: avatarLink }, "PATCH");
-}
+  .catch(err => console.log(err)) 
+  
 
 function saveInfo(load, buttonText) {
   if (load) {
     buttonText.textContent = 'Сохранение...'
   } else {
-    buttonText.textContent = 'Сохранить'
+    buttonText.textContent = buttonText.dataset.buttonText;
   }
 }
 
@@ -127,6 +86,7 @@ function handleProfileFormSubmit(evt) { // function that allows changing the pro
   })
 }
 
+
 function handleAvatarSubmit(evt) {
   evt.preventDefault();
   saveInfo(true, popupButton);
@@ -143,16 +103,41 @@ function handleAvatarSubmit(evt) {
 
 function handleCardSubmit(evt) { // function that adds a new card to the page
   evt.preventDefault();
-  const inputName = inputPlaceNameFormAddNewCard.value;
-  const inputLink = inputPlaceLinkFormAddNewCard.value;
-  const card = {
-    name: inputName,
-    link: inputLink
-  };
-  const newCard = createCard(card, deleteCard, openImg, handleLike);
-  cardContainer.prepend(newCard);
-  closeModal(newCardPopup);
+  saveInfo(true, cardButton);
+  addCards(inputPlaceNameFormAddNewCard.value, inputPlaceLinkFormAddNewCard.value)
+    .then((card) => {
+      cardContainer.append(createCard(card, removeCard, openImg, handleLike, ID))
+    })
+    .catch(err => console.log(err))
+    .finally(() => {
+      saveInfo(false, cardButton);
+      closeModal(newCardPopup);
+    })
   newCardPopup.querySelector('.popup__form').reset();
+}
+
+function handleDeleteCard(evt) {
+  evt.preventDefault();
+  saveInfo(true, popupDeleteCardButton);
+  const cardID = popupDeleteCardButton.dataset.cardId;
+  console.log("Card ID to delete:", cardID);
+  deleteCards(cardID)
+    .then(() => {
+      console.log('Card successfully deleted from server');
+      const deleteCard = document.getElementById(cardID);
+      if (deleteCard) {
+        deleteCard.remove();
+        popupDeleteCardButton.dataset.cardId = '';
+        saveInfo(false, popupDeleteCardButton);
+        closeModal(popupDeleteCard);
+      }
+    })
+    .catch(err => console.log(err));
+}
+
+function removeCard(card) {
+  openModal(popupDeleteCard);
+  popupDeleteCardButton.dataset.cardId = card['_id'];
 }
 
 function openImg(data) {
@@ -182,6 +167,7 @@ profileImage.addEventListener('click', () => {
 
 newCardPopup.addEventListener('submit', handleCardSubmit);
 formProfileEdit.addEventListener('submit', handleProfileFormSubmit);
-avatarPopup.addEventListener('submit', handleAvatarSubmit)
+avatarPopup.addEventListener('submit', handleAvatarSubmit);
+popupDeleteCardButton.addEventListener('click', handleDeleteCard);
 
 enableValidation(validationConfig);

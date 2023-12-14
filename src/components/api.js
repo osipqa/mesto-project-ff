@@ -6,19 +6,63 @@ const config = {
   }
 }
 
-function get() {
-  return fetch(config.baseUrl, {
+export function getInfo(data) {
+  return fetch(`${config.baseUrl}${data}`, {
+    method: "GET",
     headers: config.headers,
   })
-  .then(otvet)
+  .then(res => res.json())
+  .then(res => {
+    console.log(res);
+    return res;
+  })
 }
 
-const otvet = (ok) => {
-  if (ok.ok) {
-    return ok.json();
-  } else {
-    return Promise.reject(`Error: ${ok.status}`);
-  }
+export function getCards(data) {
+  return fetch(`${config.baseUrl}${data}`, {
+    method: "GET",
+    headers: config.headers,
+  })
+  .then(res => res.json())
+  .then(res => {
+    console.log(res);
+    return res;
+  })
 }
 
-get();
+function post(users, data, method = "POST") {
+  return fetch(`${config.baseUrl}${users}`, {
+    method,
+    headers: config.headers,
+    body: JSON.stringify(data),
+  })
+  .then(res => res.json())
+  .then(res => {
+    console.log(res);
+    return res;
+  })
+}
+
+export function toChangeNames(inputName, inputDescription) {
+  return post("/users/me", { name: inputName, about: inputDescription}, "PATCH");
+}
+
+export function toChangeAvatar(avatarLink) {
+  return post("/users/me/avatar", { avatar: avatarLink }, "PATCH");
+}
+
+export function addCards(dataName, dataLink) {
+  return post("/cards", { name: dataName, link: dataLink});
+}
+
+export function deleteCards(cardId) {
+  return post(`/cards/${cardId}`, {}, "DELETE");
+}
+
+export function deleteLike(data) {
+  return post(`/cards/likes/${data['_id']}`, {}, "DELETE");
+}
+
+export function addLike(data) {
+  return post(`/cards/likes/${data['_id']}`, {}, "PUT");
+}
