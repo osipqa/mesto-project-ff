@@ -12,9 +12,6 @@ export function getInfo(data) {
     headers: config.headers,
   })
   .then(res => res.json())
-  .then(res => {
-    return res;
-  })
   .catch((err) => Promise.reject(`Error: ${err.status}`))
 }
 
@@ -24,9 +21,6 @@ export function getCards(data) {
     headers: config.headers,
   })
   .then(res => res.json())
-  .then(res => {
-    return res;
-  })
   .catch((err) => Promise.reject(`Error: ${err.status}`))
 }
 
@@ -37,9 +31,6 @@ function post(users, data, method = "POST") {
     body: JSON.stringify(data),
   })
   .then(res => res.json())
-  .then(res => {
-    return res;
-  })
   .catch((err) => Promise.reject(`Error: ${err.status}`))
 }
 

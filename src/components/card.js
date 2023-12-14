@@ -32,10 +32,11 @@ function createCard(data, removeCard, openImg, handleLike, ID) {
   return cardElement;
 }
 
-function handleLike(card, ID, cardElement) {
+function handleLike(card, userID, cardElement) {
   const buttonLike = cardElement.querySelector('.card__like-button');
-  const buttonCount = cardElement.querySelector('.card__like-count')
-  if (check(card, ID)) {
+  const buttonCount = cardElement.querySelector('.card__like-count');
+
+  if (check(card, userID)) {
     deleteLike(card)
       .then((res) => {
         handleLikeSuccess(res, buttonLike, buttonCount);
@@ -61,6 +62,6 @@ function handleLikeError(err) {
   console.log(`Error message: ${err}`);
 }
 
-function check(data, ID) {
-  return data.likes.some((i) => i['_id'] === ID);
+function check(data, userID) {
+  return data.likes.some((like) => like['_id'] === userID);
 }

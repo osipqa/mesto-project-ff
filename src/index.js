@@ -29,6 +29,7 @@ const allPopups = document.querySelectorAll('.popup');
 const cardButton = newCardPopup.querySelector('.popup__button')
 const inputPlaceNameFormAddNewCard = newCardPopup.querySelector('.popup__input_type_card-name');
 const inputPlaceLinkFormAddNewCard = newCardPopup.querySelector('.popup__input_type_url');
+
 const validationConfig = {
   formSelector: '.popup__form',
   inputSelector: '.popup__input',
@@ -47,13 +48,13 @@ allPopups.forEach((out) => {
 });
 
 Promise.all([getInfo("/users/me"), getCards("/cards")])
-  .then((data) => {
-    const currentUser = data[0];
-    const userCards = data[1].filter(card => card.owner._id === currentUser._id);
-    profileName.textContent = data[0].name;
-    profileDescription.textContent = data[0].about;
-    profileImage.style = `background-image: url('${data[0].avatar}')`
-    userCards.forEach(card => cardContainer.append(createCard(card, removeCard, openImg, handleLike, currentUser._id)))
+  .then(([currentUser, cards]) => {
+    /* const userCards = cards.filter(card => card.owner._id === currentUser._id); */
+    profileName.textContent = currentUser.name;
+    profileDescription.textContent = currentUser.about;
+    profileImage.style = `background-image: url('${currentUser.avatar}')`
+    console.log("Current user ID:", currentUser._id);
+    cards.forEach(card => cardContainer.append(createCard(card, removeCard, openImg, handleLike, currentUser._id)));
   })
   .catch((err) => Promise.reject(`Error: ${err.status}`));
 
