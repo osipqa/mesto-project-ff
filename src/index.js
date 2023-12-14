@@ -8,6 +8,10 @@ import { enableValidation, clearValidation } from './components/validation.js';
 const cardContainer = document.querySelector('.places__list');
 const profileEditButton = document.querySelector('.profile__edit-button');
 const profileButtonAdd = document.querySelector('.profile__add-button');
+const profileImage = document.querySelector('.profile__image');
+const avatarPopup = document.querySelector('.popup__avatar');
+const inputLinkAvatar = document.getElementById('link-avatar-input');
+const popupButton = avatarPopup.querySelector('.popup__button');
 const newCardPopup = document.querySelector('.popup_type_new-card');
 const imageOpenPopup = document.querySelector('.popup_type_image');
 const imagePopupImage = imageOpenPopup.querySelector('.popup__image');
@@ -15,6 +19,7 @@ const imagePopupCaption = document.querySelector('.popup__caption')
 const profileName = document.querySelector('.profile__title');
 const profileDescription = document.querySelector('.profile__description');
 const popupProfileEdit = document.querySelector('.popup_type_edit');
+const popupProfileButton = popupProfileEdit.querySelector('.popup__button')
 const formProfileEdit = popupProfileEdit.querySelector('.popup__form');
 const inputName = formProfileEdit.querySelector('.popup__input_type_name');
 const inputDescription = formProfileEdit.querySelector('.popup__input_type_description');
@@ -44,11 +49,96 @@ allPopups.forEach((out) => {
 
 releaseCard(); // i would like to get rid of this thing, but I still dont know how to do it... :c
 
+const config = {
+  baseUrl: 'https://nomoreparties.co/v1/wff-cohort-2',
+  headers: {
+    authorization: '637888a1-9ced-4570-b92f-3c1ad708077b',
+    'Content-Type': 'application/json'
+  }
+}
+
+Promise.all([getinfo("/users/me")])
+  .then((data) => {
+    console.log(data);
+    profileName.textContent = data[0].name;
+    profileDescription.textContent = data[0].about;
+    profileImage.style = `background-image: url('${data[0].avatar}')`
+  })
+
+function getinfo(data) {
+  return fetch(`${config.baseUrl}${data}`, {
+    method: "GET",
+    headers: config.headers,
+  })
+  .then(res => res.json())
+  .then(res => {
+    console.log(res)
+    return res
+  })
+}
+
+getinfo("/users/me");
+
+function post(users, data, method = "POST") {
+  return fetch(`${config.baseUrl}${users}`, {
+    method,
+    headers: config.headers,
+    body: JSON.stringify(data),
+  })
+  .then(res => res.json())
+  .then(res => {
+    console.log(res);
+    return res;
+  })
+}
+
+function toChangeNames(inputName, inputDescription) {
+  return post("/users/me", { name: inputName, about: inputDescription}, "PATCH");
+}
+
+function toChangeAvatar(avatarLink) {
+  return post("/users/me/avatar", { avatar: avatarLink }, "PATCH");
+}
+
+function saveInfo(load, buttonText) {
+  if (load) {
+    buttonText.textContent = 'Сохранение...'
+  } else {
+    buttonText.textContent = 'Сохранить'
+  }
+}
+
 function handleProfileFormSubmit(evt) { // function that allows changing the profileName and profileDescription 
   evt.preventDefault();
+  saveInfo(true, popupProfileButton);
   profileName.textContent = inputName.value;
   profileDescription.textContent = inputDescription.value;
-  closeModal(popupProfileEdit);
+  toChangeNames(inputName.value, inputDescription.value)
+  .then((res) => {
+    if (res && res.name && res.about) {
+      profileName.textContent = res.name;
+      profileDescription.textContent = res.about;
+    }
+  })
+  .catch(err => console.log(err))
+  .finally(() => {
+    saveInfo(false, popupProfileButton);
+    closeModal(popupProfileEdit);
+  })
+}
+
+function handleAvatarSubmit(evt) {
+  evt.preventDefault();
+  saveInfo(true, popupButton);
+  toChangeAvatar(inputLinkAvatar.value)
+    .then((res) => {
+      profileImage.style = `background-image: url('${res.avatar}')`
+    })
+    .catch((err) => console.log(err))
+    .finally(() => { 
+      saveInfo(false, popupButton);
+      closeModal(avatarPopup);
+    });
 }
 
 function handleCardSubmit(evt) { // function that adds a new card to the page
@@ -84,7 +174,14 @@ profileButtonAdd.addEventListener('click', () => {
   openModal(newCardPopup);
 });
 
+profileImage.addEventListener('click', () => {
+  clearValidation(avatarPopup, validationConfig);
+  inputLinkAvatar.value = '';
+  openModal(avatarPopup);
+})
+
 newCardPopup.addEventListener('submit', handleCardSubmit);
 formProfileEdit.addEventListener('submit', handleProfileFormSubmit);
+avatarPopup.addEventListener('submit', handleAvatarSubmit)
 
 enableValidation(validationConfig);

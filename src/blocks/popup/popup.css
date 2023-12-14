@@ -27,3 +27,7 @@
   transition: visibility 0s 0.6s, opacity 0.6s;
   z-index: 10;
 }
+
+.popup__avatar {
+  min-height: 0;
+}

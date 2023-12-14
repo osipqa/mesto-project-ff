@@ -5,3 +5,20 @@ const config = {
     'Content-Type': 'application/json'
   }
 }
+
+function get() {
+  return fetch(config.baseUrl, {
+    headers: config.headers,
+  })
+  .then(otvet)
+}
+
+const otvet = (ok) => {
+  if (ok.ok) {
+    return ok.json();
+  } else {
+    return Promise.reject(`Error: ${ok.status}`);
+  }
+}
+
+get();
