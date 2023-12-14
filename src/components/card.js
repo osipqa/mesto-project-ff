@@ -38,20 +38,27 @@ function handleLike(card, ID, cardElement) {
   if (check(card, ID)) {
     deleteLike(card)
       .then((res) => {
-        buttonCount.textContent = res.likes.length;
-        buttonLike.classList.remove('card__like-button_is-active');
+        handleLikeSuccess(res, buttonLike, buttonCount);
         card.likes = res.likes;
       })
-      .catch(err => console.log(err));
+      .catch(handleLikeError);
   } else {
     addLike(card)
       .then((res) => {
-        buttonCount.textContent = res.likes.length;
-        buttonLike.classList.add('card__like-button_is-active');
+        handleLikeSuccess(res, buttonLike, buttonCount);
         card.likes = res.likes;
       })
-      .catch(err => console.log(err))
+      .catch(handleLikeError);
   }
+}
+
+function handleLikeSuccess(res, buttonLike, buttonCount) {
+  buttonLike.classList.toggle('card__like-button_is-active');
+  buttonCount.textContent = res.likes.length;
+}
+
+function handleLikeError(err) {
+  console.log(`Error message: ${err}`);
 }
 
 function check(data, ID) {
