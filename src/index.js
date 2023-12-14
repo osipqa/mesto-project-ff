@@ -57,15 +57,6 @@ Promise.all([getInfo("/users/me"), getCards("/cards")])
     userCards.forEach(card => cardContainer.append(createCard(card, removeCard, openImg, handleLike, currentUser._id)))
   })
   .catch(err => console.log(err)) 
-  
-
-function saveInfo(load, buttonText) {
-  if (load) {
-    buttonText.textContent = 'Сохранение...'
-  } else {
-    buttonText.textContent = buttonText.dataset.buttonText;
-  }
-}
 
 function handleProfileFormSubmit(evt) { // function that allows changing the profileName and profileDescription 
   evt.preventDefault();
@@ -146,6 +137,14 @@ function openImg(data) {
   imagePopupImage.src = data.link;
   openModal(imageOpenPopup);
 };
+
+function saveInfo(load, buttonText) {
+  if (load) {
+    buttonText.textContent = 'Сохранение...'
+  } else {
+    buttonText.textContent = buttonText.dataset.buttonText;
+  }
+}
 
 profileEditButton.addEventListener('click', () => {
   inputName.value = profileName.textContent;

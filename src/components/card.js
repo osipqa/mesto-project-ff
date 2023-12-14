@@ -24,6 +24,11 @@ function createCard(data, removeCard, openImg, handleLike, ID) {
       removeCard(data);
     });
   }
+  if (check(data, ID)) {
+    cardLikeButton.classList.add('card__like-button_is-active');
+  } else {
+    cardLikeButton.classList.remove('card__like-button_is-active');
+  }
   return cardElement;
 }
 
@@ -41,7 +46,7 @@ function handleLike(card, ID, cardElement) {
   } else {
     addLike(card)
       .then((res) => {
-        buttonLike.textContent = res.likes.length;
+        buttonCount.textContent = res.likes.length;
         buttonLike.classList.add('card__like-button_is-active');
         card.likes = res.likes;
       })
