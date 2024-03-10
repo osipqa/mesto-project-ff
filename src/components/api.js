@@ -1,59 +1,67 @@
 const config = {
   baseUrl: 'https://nomoreparties.co/v1/wff-cohort-2',
   headers: {
-    authorization: '637888a1-9ced-4570-b92f-3c1ad708077b',
+    authorization: process.env.token,
     'Content-Type': 'application/json'
   }
 }
 
-export function getInfo(data) {
-  return fetch(`${config.baseUrl}${data}`, {
-    method: "GET",
-    headers: config.headers,
+export async function getInfo (data) {
+  return await fetch(`${config.baseUrl}${data}`, {
+    method: 'GET',
+    headers: config.headers
   })
-  .then(res => res.json())
-  .catch((err) => Promise.reject(`Error: ${err.status}`))
+    .then(async res => await res.json())
+    .catch(async (err) => await Promise.reject(`Error: ${err.status}`))
 }
 
-export function getCards(data) {
-  return fetch(`${config.baseUrl}${data}`, {
-    method: "GET",
-    headers: config.headers,
+export async function getCards (data) {
+  return await fetch(`${config.baseUrl}${data}`, {
+    method: 'GET',
+    headers: config.headers
   })
-  .then(res => res.json())
-  .catch((err) => Promise.reject(`Error: ${err.status}`))
+    .then(async res => await res.json())
+    .catch(async (err) => await Promise.reject(`Error: ${err.status}`))
 }
 
-function post(users, data, method = "POST") {
-  return fetch(`${config.baseUrl}${users}`, {
+async function post (url, data, method = 'POST', userID) {
+  return await fetch(`${config.baseUrl}${url}`, {
     method,
-    headers: config.headers,
-    body: JSON.stringify(data),
+    headers: {
+      ...config.headers,
+      Authorization: userID || config.headers.authorization
+    },
+    body: JSON.stringify(data)
   })
-  .then(res => res.json())
-  .catch((err) => Promise.reject(`Error: ${err.status}`))
+    .then(async res => {
+      if (!res.ok) {
+        throw new Error(`Error: ${res.status}`)
+      }
+      return await res.json()
+    })
+    .catch(async err => await Promise.reject(err.message))
 }
 
-export function toChangeNames(inputName, inputDescription) {
-  return post("/users/me", { name: inputName, about: inputDescription}, "PATCH");
+export async function toChangeNames (inputName, inputDescription) {
+  return await post('/users/me', { name: inputName, about: inputDescription }, 'PATCH')
 }
 
-export function toChangeAvatar(avatarLink) {
-  return post("/users/me/avatar", { avatar: avatarLink }, "PATCH");
+export async function toChangeAvatar (avatarLink) {
+  return await post('/users/me/avatar', { avatar: avatarLink }, 'PATCH')
 }
 
-export function addCards(dataName, dataLink) {
-  return post("/cards", { name: dataName, link: dataLink});
+export async function addCards (dataName, dataLink) {
+  return await post('/cards', { name: dataName, link: dataLink })
 }
 
-export function deleteCards(cardId) {
-  return post(`/cards/${cardId}`, {}, "DELETE");
+export async function deleteCards (cardId) {
+  return await post(`/cards/${cardId}`, {}, 'DELETE')
 }
 
-export function deleteLike(data) {
-  return post(`/cards/likes/${data['_id']}`, {}, "DELETE");
+export async function deleteLike (data) {
+  return await post(`/cards/likes/${data._id}`, {}, 'DELETE')
 }
 
-export function addLike(data) {
-  return post(`/cards/likes/${data['_id']}`, {}, "PUT");
+export async function addLike (data) {
+  return await post(`/cards/likes/${data._id}`, {}, 'PUT')
 }
