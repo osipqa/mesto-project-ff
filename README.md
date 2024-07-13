@@ -15,5 +15,4 @@ Deploy. =)
 https://osipqa.github.io/mesto-project-ff/
 
 v2.0
-
 Решил вернуться, пересобрал на TS.
